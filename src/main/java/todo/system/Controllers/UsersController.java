@@ -1,7 +1,10 @@
 package todo.system.Controllers;
 
+import com.fasterxml.jackson.datatype.jsr310.ser.YearSerializer;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import todo.system.Assembler.UserModelAssembler;
 import todo.system.Entitys.User;
@@ -29,20 +32,30 @@ public class UsersController {
     }
 
     @PostMapping("/users")
-    public  User addUser(@RequestBody User user){
-        return repository.save(user);
+    public ResponseEntity<?> addUser(@RequestBody User user){
+
+        EntityModel<User> entityModel = assembler.toModel(repository.save(user));
+
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
 
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable Long id){
-        return repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    public EntityModel<User> getUser(@PathVariable Long id){
+
+        User user = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        return assembler.toModel(user);
     }
 
     @PutMapping("/users/{id}")
-    public User putUser(@PathVariable Long id,
+    public ResponseEntity<?> putUser(@PathVariable Long id,
     @RequestBody User newUser){
-        return repository.findById(id).map(user -> {
+
+        User updateUser = repository.findById(id).map(user -> {
 
             user.setName(newUser.getName());
             user.setEmail(newUser.getEmail());
@@ -53,11 +66,18 @@ public class UsersController {
         .orElseGet(() -> {
             return repository.save(newUser);
         });
+
+        EntityModel<User> userEntityModel = assembler.toModel(updateUser);
+
+        return ResponseEntity.created(userEntityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(userEntityModel);
     }
 
     @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable Long id){
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
         repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/users")
