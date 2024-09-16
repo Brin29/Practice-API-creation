@@ -2,6 +2,7 @@ package todo.system.Controllers;
 
 import org.springframework.web.bind.annotation.*;
 import todo.system.Entitys.User;
+import todo.system.Excpetions.UserNotFoundException;
 import todo.system.Repository.UserRepository;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class UsersController {
 
     @GetMapping("/users/{id}")
     public User getUser(@PathVariable Long id){
-        return repository.findById(id).orElseThrow(() -> new UserNotFoundException);
+        return repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @PutMapping("/users/{id}")

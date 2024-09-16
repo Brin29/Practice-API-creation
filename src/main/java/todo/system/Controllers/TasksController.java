@@ -2,6 +2,7 @@ package todo.system.Controllers;
 
 import org.springframework.web.bind.annotation.*;
 import todo.system.Entitys.Task;
+import todo.system.Excpetions.TaskNotFoundException;
 import todo.system.Repository.TaskRepository;
 
 @RestController
@@ -21,7 +22,7 @@ public class TasksController {
 
     @GetMapping("/tasks/{id}")
     public Task getTask(@PathVariable Long id){
-        return repository.findById(id).orElseThrow(() -> new NotFoundTaskException);
+        return repository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     @PutMapping("/tasks/{id}")
