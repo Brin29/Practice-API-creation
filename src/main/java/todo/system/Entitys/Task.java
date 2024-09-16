@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class Task {
 
-    private @Id @GeneratedValue long id;
+    private @Id @GeneratedValue Long id;
 
     private  String title;
 
