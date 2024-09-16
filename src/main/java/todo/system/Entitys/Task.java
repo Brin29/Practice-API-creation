@@ -1,12 +1,11 @@
 package todo.system.Entitys;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import todo.system.StatusEnum.Status;
 
 import java.util.Objects;
 
+@Entity
 public class Task {
 
     private @Id @GeneratedValue Long id;
@@ -15,13 +14,18 @@ public class Task {
 
     private String description;
 
-    private Enum<Status> status;
+    private Status status;
 
     // Un usuario puede tener muchas tareas
     @ManyToOne
     private User user;
 
-    public Task(String title, String description, User user) {}
+    public Task(String title, String description, User user, Status status) {
+        this.title = title;
+        this.description = description;
+        this.user = user;
+        this.status = status;
+    }
 
     public Task(){
 
@@ -51,11 +55,11 @@ public class Task {
         this.description = description;
     }
 
-    public Enum<Status> getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Enum<Status> status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
